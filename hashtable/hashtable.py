@@ -17,8 +17,8 @@ class HashTable:
     """
 
     def __init__(self, capacity = MIN_CAPACITY):
-        if capacity < MIN_CAPACITY:
-            capacity = MIN_CAPACITY
+        # if capacity < MIN_CAPACITY:
+        #     capacity = MIN_CAPACITY
         self.capacity = [None] * capacity
 
     def get_num_slots(self):
@@ -26,10 +26,6 @@ class HashTable:
         Return the length of the list you're using to hold the hash
         table data. (Not the number of items stored in the hash table,
         but the number of slots in the main list.)
-
-        One of the tests relies on this.
-
-        Implement this.
         """
         return len(self.capacity)
 
@@ -73,45 +69,9 @@ class HashTable:
         return self.fnv1(key) % len(self.capacity)
         # return self.djb2(key) % self.capacity
 
-    def put(self, key, value):
-        """
-        Store the value with the given key.
-
-        Hash collisions should be handled with Linked List Chaining.
-        """
-        i = self.hash_index(key)
-
-        if self.capacity[i] is not None:
-            for keyval in self.capacity[i]:
-                if keyval[0] == key:
-                    keyval[1] = value
-                    break
-            
-        else:
-            self.capacity[i] = []
-            self.capacity[i].append([key, value])
-
-
-    def delete(self, key):
-        """
-        Remove the value stored with the given key.
-
-        Print a warning if the key is not found.
-        """
-        i = self.hash_index(key)
-        
-        if self.capacity[i] is not None:
-            for keyval in self.capacity[i]:
-                if keyval[0] == key:
-                    keyval[1] = None
-        else:
-            print("Warning: No key found")
-
-
     def get(self, key):
         """
         Retrieve the value stored with the given key.
-
         Returns None if the key is not found.
         """
         i = self.hash_index(key)
@@ -124,35 +84,60 @@ class HashTable:
                     return keyval[1]
                     
             return None
+            
+    def put(self, key, value):
+        """
+        Store the value with the given key.
+        Hash collisions should be handled with Linked List Chaining.
+        """
+        i = self.hash_index(key)
 
-    # def is_full(self):
-    #     items = 0
-    #     for item in self.capacity:
-    #         if item is not None:
-    #             items += 1
-    #     return items > len(self.capacity) / 2
+        if self.capacity[i] is not None:
+            for keyval in self.capacity[i]:
+                if keyval[0] == key:
+                    keyval[1] = value
+                    break
+            else:
+                self.capacity[i].append([key, value])
+        
+        else:
+            self.capacity[i] = []
+            self.capacity[i].append([key, value])
+
+
+    def delete(self, key):
+        """
+        Remove the value stored with the given key.
+        Print a warning if the key is not found.
+        """
+        i = self.hash_index(key)
+        
+        if self.capacity[i] is not None:
+            for keyval in self.capacity[i]:
+                if keyval[0] == key:
+                    keyval[1] = None
+        else:
+            print("Warning: No key found")
         
     def resize(self, new_capacity):
         """
         Changes the capacity of the hash table and
         rehashes all key/value pairs.
         """
-        '''
-        Resize should be change the cap
-        '''
         
-        self.capacity = new_capacity
+        ht2 = HashTable(capacity=new_capacity)
         
-        for i in range(len(new_capacity)):
-            print(f"i in range: {i}")
+        for i in range(len(self.capacity)):
             if self.capacity[i] is None:
                 continue
             for keyval in self.capacity[i]:
-                self.put(keyval[0], keyval[1])
+                ht2.put(keyval[0], keyval[1])
+        self.capacity = ht2.capacity
 
 
 if __name__ == "__main__":
     ht = HashTable(8)
+    
 
     ht.put("line_1", "'Twas brillig, and the slithy toves")
     ht.put("line_2", "Did gyre and gimble in the wabe:")
@@ -181,60 +166,7 @@ if __name__ == "__main__":
     print(f"\nResized from {old_capacity} to {new_capacity}.\n")
 
     # Test if data intact after resizing
-    ht.put("line_1", "'Twas brillig, and the slithy toves")
-    ht.put("line_2", "Did gyre and gimble in the wabe:")
-    ht.put("line_3", "All mimsy were the borogoves,")
-    ht.put("line_4", "And the mome raths outgrabe.")
-    ht.put("line_5", '"Beware the Jabberwock, my son!')
-    ht.put("line_6", "The jaws that bite, the claws that catch!")
-    ht.put("line_7", "Beware the Jubjub bird, and shun")
-    ht.put("line_8", 'The frumious Bandersnatch!"')
-    ht.put("line_9", "He took his vorpal sword in hand;")
-    ht.put("line_10", "Long time the manxome foe he sought--")
-    ht.put("line_11", "So rested he by the Tumtum tree")
-    ht.put("line_12", "And stood awhile in thought.")
-
     for i in range(1, 13):
         print(ht.get(f"line_{i}"))
 
     print("")
-
-
-'''
-data = [None] * 16  # Size should be a power of 2
-​
-def my_hash(string):
-	"""Beej's naive hashing function"""
-​
-	sb = string.encode()
-​
-	total = 0
-​
-	for b in sb:
-		total += b
-        hash &= 0xffffffffffffffff
-​
-	return total
-​
-def get_index(string):
-	h = my_hash(string)
-​
-	i = h % len(data)
-​
-	return i
-​
-def put(key, value):
-	i = get_index(key)
-​
-	data[i] = value
-
-def get (key):
-	i = get_index(key)
-​
-	return data[i]
-
-def delete (key):
-	i = get_index(key)
-​
-	data[i] = None
-'''
