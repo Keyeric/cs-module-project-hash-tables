@@ -17,6 +17,8 @@ class HashTable:
     """
 
     def __init__(self, capacity = MIN_CAPACITY):
+        if capacity < MIN_CAPACITY:
+            capacity = MIN_CAPACITY
         self.capacity = [None] * capacity
 
     def get_num_slots(self):
@@ -84,9 +86,7 @@ class HashTable:
                 if keyval[0] == key:
                     keyval[1] = value
                     break
-            else:
-                if self.is_full():
-                    self.resize(len(self.capacity))
+            
         else:
             self.capacity[i] = []
             self.capacity[i].append([key, value])
@@ -125,27 +125,30 @@ class HashTable:
                     
             return None
 
-    def is_full(self):
-        items = 0
-        for item in self.capacity:
-            if item is not None:
-                items += 1
-        return items > len(self.capacity) / 2
+    # def is_full(self):
+    #     items = 0
+    #     for item in self.capacity:
+    #         if item is not None:
+    #             items += 1
+    #     return items > len(self.capacity) / 2
         
     def resize(self, new_capacity):
         """
         Changes the capacity of the hash table and
         rehashes all key/value pairs.
         """
+        '''
+        Resize should be change the cap
+        '''
         
-        ht2 = HashTable(capacity=new_capacity)
+        self.capacity = new_capacity
         
-        for i in range(len(self.capacity)):
+        for i in range(len(new_capacity)):
+            print(f"i in range: {i}")
             if self.capacity[i] is None:
                 continue
             for keyval in self.capacity[i]:
-                ht2.put(keyval[0], keyval[1])
-        self.capacity = ht2.capacity
+                self.put(keyval[0], keyval[1])
 
 
 if __name__ == "__main__":
@@ -178,6 +181,19 @@ if __name__ == "__main__":
     print(f"\nResized from {old_capacity} to {new_capacity}.\n")
 
     # Test if data intact after resizing
+    ht.put("line_1", "'Twas brillig, and the slithy toves")
+    ht.put("line_2", "Did gyre and gimble in the wabe:")
+    ht.put("line_3", "All mimsy were the borogoves,")
+    ht.put("line_4", "And the mome raths outgrabe.")
+    ht.put("line_5", '"Beware the Jabberwock, my son!')
+    ht.put("line_6", "The jaws that bite, the claws that catch!")
+    ht.put("line_7", "Beware the Jubjub bird, and shun")
+    ht.put("line_8", 'The frumious Bandersnatch!"')
+    ht.put("line_9", "He took his vorpal sword in hand;")
+    ht.put("line_10", "Long time the manxome foe he sought--")
+    ht.put("line_11", "So rested he by the Tumtum tree")
+    ht.put("line_12", "And stood awhile in thought.")
+
     for i in range(1, 13):
         print(ht.get(f"line_{i}"))
 
