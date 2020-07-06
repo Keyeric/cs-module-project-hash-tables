@@ -10,19 +10,14 @@ class HashTableEntry:
 
 # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
-
-
 class HashTable:
     """
     A hash table that with `capacity` buckets
     that accepts string keys
-
-    Implement this.
     """
 
-    def __init__(self, capacity):
-        # Your code here
-
+    def __init__(self, capacity = MIN_CAPACITY):
+        self.capacity = [None] * capacity
 
     def get_num_slots(self):
         """
@@ -34,14 +29,12 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return len(self.capacity)
 
 
     def get_load_factor(self):
         """
         Return the load factor for this hash table.
-
-        Implement this.
         """
         # Your code here
 
@@ -49,18 +42,23 @@ class HashTable:
     def fnv1(self, key):
         """
         FNV-1 Hash, 64-bit
-
-        Implement this, and/or DJB2.
         """
 
-        # Your code here
+        #Constants
+        FNV_prime = 0x00000100000001B3
+        offset_basis = 0xcbf29ce484222325
+        hash = offset_basis
+        for char in key:
+            hash ^= ord(char)
+            hash *= FNV_prime
+            # Flip lines the 2 lines above for fnv1_64 implementation
+            hash &= 0xffffffffffffffff
+        return hash
 
 
     def djb2(self, key):
         """
         DJB2 hash, 32-bit
-
-        Implement this, and/or FNV-1.
         """
         # Your code here
 
@@ -70,18 +68,28 @@ class HashTable:
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        #return self.fnv1(key) % self.capacity
-        return self.djb2(key) % self.capacity
+        return self.fnv1(key) % len(self.capacity)
+        # return self.djb2(key) % self.capacity
 
     def put(self, key, value):
         """
         Store the value with the given key.
 
         Hash collisions should be handled with Linked List Chaining.
-
-        Implement this.
         """
-        # Your code here
+        i = self.hash_index(key)
+
+        if self.capacity[i] is not None:
+            for keyval in self.capacity[i]:
+                if keyval[0] == key:
+                    keyval[1] = value
+                    break
+            else:
+                if self.is_full():
+                    self.resize(len(self.capacity))
+        else:
+            self.capacity[i] = []
+            self.capacity[i].append([key, value])
 
 
     def delete(self, key):
@@ -89,10 +97,15 @@ class HashTable:
         Remove the value stored with the given key.
 
         Print a warning if the key is not found.
-
-        Implement this.
         """
-        # Your code here
+        i = self.hash_index(key)
+        
+        if self.capacity[i] is not None:
+            for keyval in self.capacity[i]:
+                if keyval[0] == key:
+                    keyval[1] = None
+        else:
+            print("Warning: No key found")
 
 
     def get(self, key):
@@ -100,21 +113,39 @@ class HashTable:
         Retrieve the value stored with the given key.
 
         Returns None if the key is not found.
-
-        Implement this.
         """
-        # Your code here
+        i = self.hash_index(key)
 
+        if self.capacity[i] is None:
+            return None
+        else:
+            for keyval in self.capacity[i]:
+                if keyval[0] == key:
+                    return keyval[1]
+                    
+            return None
 
+    def is_full(self):
+        items = 0
+        for item in self.capacity:
+            if item is not None:
+                items += 1
+        return items > len(self.capacity) / 2
+        
     def resize(self, new_capacity):
         """
         Changes the capacity of the hash table and
         rehashes all key/value pairs.
-
-        Implement this.
         """
-        # Your code here
-
+        
+        ht2 = HashTable(capacity=new_capacity)
+        
+        for i in range(len(self.capacity)):
+            if self.capacity[i] is None:
+                continue
+            for keyval in self.capacity[i]:
+                ht2.put(keyval[0], keyval[1])
+        self.capacity = ht2.capacity
 
 
 if __name__ == "__main__":
@@ -141,7 +172,7 @@ if __name__ == "__main__":
 
     # Test resizing
     old_capacity = ht.get_num_slots()
-    ht.resize(ht.capacity * 2)
+    ht.resize(len(ht.capacity) * 2)
     new_capacity = ht.get_num_slots()
 
     print(f"\nResized from {old_capacity} to {new_capacity}.\n")
@@ -151,3 +182,43 @@ if __name__ == "__main__":
         print(ht.get(f"line_{i}"))
 
     print("")
+
+
+'''
+data = [None] * 16  # Size should be a power of 2
+​
+def my_hash(string):
+	"""Beej's naive hashing function"""
+​
+	sb = string.encode()
+​
+	total = 0
+​
+	for b in sb:
+		total += b
+        hash &= 0xffffffffffffffff
+​
+	return total
+​
+def get_index(string):
+	h = my_hash(string)
+​
+	i = h % len(data)
+​
+	return i
+​
+def put(key, value):
+	i = get_index(key)
+​
+	data[i] = value
+
+def get (key):
+	i = get_index(key)
+​
+	return data[i]
+
+def delete (key):
+	i = get_index(key)
+​
+	data[i] = None
+'''
