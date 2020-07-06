@@ -128,11 +128,22 @@ class HashTable:
         ht2 = HashTable(capacity=new_capacity)
         
         for i in range(len(self.capacity)):
-            if self.capacity[i] is None:
-                continue
+            # if self.capacity[i] is None:
+            #     continue
             for keyval in self.capacity[i]:
                 ht2.put(keyval[0], keyval[1])
         self.capacity = ht2.capacity
+
+        
+        # prev_capacity = self.capacity
+        # self.capacity = [None] * new_capacity
+        
+        # for i in range(new_capacity):
+        #     print(f"i in range: {i}")
+        #     if self.capacity[i] is None:
+        #         continue
+        #     for keyval in self.capacity[i]:
+        #         self.put(keyval[0], keyval[1])
 
 
 if __name__ == "__main__":
