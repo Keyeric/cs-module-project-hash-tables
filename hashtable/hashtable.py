@@ -20,6 +20,8 @@ class HashTable:
         # if capacity < MIN_CAPACITY:
         #     capacity = MIN_CAPACITY
         self.capacity = [None] * capacity
+        self.size = 0
+
 
     def get_num_slots(self):
         """
@@ -34,7 +36,11 @@ class HashTable:
         """
         Return the load factor for this hash table.
         """
-        # Your code here
+        items = 0
+        for item in self.capacity:
+            if item is not None:
+                items += 1
+        return items/ len(self.capacity)
 
 
     def fnv1(self, key):
@@ -84,7 +90,10 @@ class HashTable:
                     return keyval[1]
                     
             return None
-            
+
+    def get_size(self):
+        return self.size
+
     def put(self, key, value):
         """
         Store the value with the given key.
@@ -99,10 +108,12 @@ class HashTable:
                     break
             else:
                 self.capacity[i].append([key, value])
+                self.size += 1
         
         else:
             self.capacity[i] = []
             self.capacity[i].append([key, value])
+            self.size += 1
 
 
     def delete(self, key):
@@ -116,6 +127,7 @@ class HashTable:
             for keyval in self.capacity[i]:
                 if keyval[0] == key:
                     keyval[1] = None
+                    self.size -= 1
         else:
             print("Warning: No key found")
         
@@ -128,8 +140,6 @@ class HashTable:
         ht2 = HashTable(capacity=new_capacity)
         
         for i in range(len(self.capacity)):
-            # if self.capacity[i] is None:
-            #     continue
             for keyval in self.capacity[i]:
                 ht2.put(keyval[0], keyval[1])
         self.capacity = ht2.capacity
@@ -137,7 +147,6 @@ class HashTable:
         
         # prev_capacity = self.capacity
         # self.capacity = [None] * new_capacity
-        
         # for i in range(new_capacity):
         #     print(f"i in range: {i}")
         #     if self.capacity[i] is None:
@@ -171,6 +180,8 @@ if __name__ == "__main__":
 
     # Test resizing
     old_capacity = ht.get_num_slots()
+    print(ht.get_size())
+    print(ht.get_load_factor())
     ht.resize(len(ht.capacity) * 2)
     new_capacity = ht.get_num_slots()
 
@@ -179,5 +190,6 @@ if __name__ == "__main__":
     # Test if data intact after resizing
     for i in range(1, 13):
         print(ht.get(f"line_{i}"))
-
+    print(ht.get_size())
+    print(ht.get_load_factor())
     print("")
