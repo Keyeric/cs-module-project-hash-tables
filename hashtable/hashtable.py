@@ -1,7 +1,4 @@
 class HashTableEntry:
-    """
-    Linked List hash table key/value pair
-    """
     def __init__(self, key, value):
         self.key = key
         self.value = value
@@ -11,43 +8,19 @@ class HashTableEntry:
 # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
 class HashTable:
-    """
-    A hash table that with `capacity` buckets
-    that accepts string keys
-    """
-
     def __init__(self, capacity = MIN_CAPACITY):
-        # if capacity < MIN_CAPACITY:
-        #     capacity = MIN_CAPACITY
+        if capacity < MIN_CAPACITY:
+            capacity = MIN_CAPACITY
         self.capacity = [None] * capacity
         self.size = 0
 
-
     def get_num_slots(self):
-        """
-        Return the length of the list you're using to hold the hash
-        table data. (Not the number of items stored in the hash table,
-        but the number of slots in the main list.)
-        """
         return len(self.capacity)
 
-
     def get_load_factor(self):
-        """
-        Return the load factor for this hash table.
-        """
-        items = 0
-        for item in self.capacity:
-            if item is not None:
-                items += 1
-        return items/ len(self.capacity)
-
+        return self.size/ len(self.capacity)
 
     def fnv1(self, key):
-        """
-        FNV-1 Hash, 64-bit
-        """
-
         #Constants
         FNV_prime = 0x00000100000001B3
         offset_basis = 0xcbf29ce484222325
@@ -59,27 +32,10 @@ class HashTable:
             hash &= 0xffffffffffffffff
         return hash
 
-
-    def djb2(self, key):
-        """
-        DJB2 hash, 32-bit
-        """
-        # Your code here
-
-
     def hash_index(self, key):
-        """
-        Take an arbitrary key and return a valid integer index
-        between within the storage capacity of the hash table.
-        """
         return self.fnv1(key) % len(self.capacity)
-        # return self.djb2(key) % self.capacity
 
     def get(self, key):
-        """
-        Retrieve the value stored with the given key.
-        Returns None if the key is not found.
-        """
         i = self.hash_index(key)
 
         if self.capacity[i] is None:
@@ -91,36 +47,32 @@ class HashTable:
                     
             return None
 
-    def get_size(self):
-        return self.size
 
     def put(self, key, value):
-        """
-        Store the value with the given key.
-        Hash collisions should be handled with Linked List Chaining.
-        """
         i = self.hash_index(key)
 
         if self.capacity[i] is not None:
             for keyval in self.capacity[i]:
                 if keyval[0] == key:
                     keyval[1] = value
+                    if self.get_load_factor() > 0.7:
+                        self.resize(len(self.capacity) * 2)
                     break
             else:
                 self.capacity[i].append([key, value])
                 self.size += 1
+                if self.get_load_factor() > 0.7:
+                    self.resize(len(self.capacity) * 2)
         
         else:
             self.capacity[i] = []
             self.capacity[i].append([key, value])
             self.size += 1
+            if self.get_load_factor() > 0.7:
+                        self.resize(len(self.capacity)*2)
 
 
     def delete(self, key):
-        """
-        Remove the value stored with the given key.
-        Print a warning if the key is not found.
-        """
         i = self.hash_index(key)
         
         if self.capacity[i] is not None:
@@ -128,20 +80,19 @@ class HashTable:
                 if keyval[0] == key:
                     keyval[1] = None
                     self.size -= 1
+                    if self.get_load_factor() < 0.2:
+                        if len(self.capacity) // 2 > 8:
+                            self.resize(len(self.capacity)//2)
         else:
             print("Warning: No key found")
         
     def resize(self, new_capacity):
-        """
-        Changes the capacity of the hash table and
-        rehashes all key/value pairs.
-        """
-        
         ht2 = HashTable(capacity=new_capacity)
         
         for i in range(len(self.capacity)):
-            for keyval in self.capacity[i]:
-                ht2.put(keyval[0], keyval[1])
+            if self.capacity[i]:
+                for keyval in self.capacity[i]:
+                    ht2.put(keyval[0], keyval[1])
         self.capacity = ht2.capacity
 
         
@@ -180,16 +131,14 @@ if __name__ == "__main__":
 
     # Test resizing
     old_capacity = ht.get_num_slots()
-    print(ht.get_size())
     print(ht.get_load_factor())
-    ht.resize(len(ht.capacity) * 2)
+    # ht.resize(len(ht.capacity) * 2)
     new_capacity = ht.get_num_slots()
 
-    print(f"\nResized from {old_capacity} to {new_capacity}.\n")
+    # print(f"\nResized from {old_capacity} to {new_capacity}.\n")
 
     # Test if data intact after resizing
-    for i in range(1, 13):
-        print(ht.get(f"line_{i}"))
-    print(ht.get_size())
-    print(ht.get_load_factor())
+    # for i in range(1, 13):
+    #     print(ht.get(f"line_{i}"))
+    # print(ht.get_load_factor())
     print("")
