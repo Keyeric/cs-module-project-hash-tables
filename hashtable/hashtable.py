@@ -26,7 +26,7 @@ class HashTable:
         offset_basis = 0xcbf29ce484222325
         hash = offset_basis
         for char in key:
-            hash ^= ord(char)
+            hash ^= ord(char) #(the ^ is the XOR)
             hash *= FNV_prime
             # Flip lines the 2 lines above for fnv1_64 implementation
             hash &= 0xffffffffffffffff
