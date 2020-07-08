@@ -1,5 +1,19 @@
-def word_count(s):
-    # Your code here
+def word_count(string):
+    ignore = '":;,.-+=/\\|[]{}()*^&'
+    lowercase = string.lower()
+    word_count = {}
+    
+    for char in lowercase:
+        if char in ignore:
+            lowercase = lowercase.replace(char, "")
+
+    words = lowercase.split()
+    for word in words:
+        if word not in word_count:
+            word_count[word] = 1
+        else:
+            word_count[word] += 1
+    return word_count
 
 
 

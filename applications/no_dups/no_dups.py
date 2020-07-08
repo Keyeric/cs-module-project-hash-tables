@@ -1,5 +1,21 @@
 def no_dups(s):
-    # Your code here
+    word_count = {}
+    # dict with number of words
+    words = s.split()
+    # list version of string
+    results = ""
+    # place to put "fixed" string
+    for word in words:
+        if word_count.__contains__(word) is False:
+            # if the word does NOT exist in results, add it
+             word_count[word] = 1
+             results += f"{word} "
+            #  else let it fly away into the infinite void. aka: "If it does exist in results, Fuck it"
+
+    return results.rstrip()
+    # return the fixed string
+        
+
 
 
 
