@@ -45,4 +45,4 @@ for i in range(500000):
     print(f'{i}: {x},{y}: {fastfun(x, y)}')
 
 end = time.time()
-print(f"Time elapsed: {end - start}:1f")
+print(f"Time elapsed: {end - start}")
