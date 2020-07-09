@@ -1,5 +1,6 @@
+import time
 def word_count(string):
-    ignore = '":;,.-+=/\\|[]{}()*^&'
+    ignore = {'"', ':', ';', ',', '.', '-', '+', '=', '/', '\\', '|', '[', ']', '{', '}', '(', ')', '*', '^', '&'}
     lowercase = string.lower()
     word_count = {}
     
@@ -18,7 +19,10 @@ def word_count(string):
 
 
 if __name__ == "__main__":
+    start = time.time()
     print(word_count(""))
     print(word_count("Hello"))
     print(word_count('Hello, my cat. And my cat doesn\'t say "hello" back.'))
     print(word_count('This is a test of the emergency broadcast network. This is only a test.'))
+    end = time.time()
+    print(f"Time elapsed: {end - start}")
